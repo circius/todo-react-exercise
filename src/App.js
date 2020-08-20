@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { lexInstruction, parseInstruction } from "./todoDSL"
 import "./App.css";
 
 function App() {
@@ -16,7 +17,7 @@ function TodoApp(props) {
     { id: 3, title: "the things I never thought I'd do", completed: false },
   ]);
 
-  const [actionBar, setActionBar] = useState({ str: ":" });
+  const [actionBar, setActionBar] = useState({ actionString: ":" });
 
   function handleStatusClick(id) {
     const todoListCopy = [...todoList];
@@ -28,10 +29,8 @@ function TodoApp(props) {
   }
 
   function handleActionUpdate(event) {
-    console.log(event);
     const newValue = event.target.value;
-    let stateCopy = { ...actionBar };
-    const newState = (stateCopy["str"] = newValue);
+    const newState = {actionString: newValue};
     return setActionBar(newState);
   }
 
@@ -39,9 +38,37 @@ function TodoApp(props) {
     function eventIsEnterKeypress(event) {
       return event.charCode === 13
     }
-      eventIsEnterKeypress(event) ? 
-        console.log("attempting to evaluate string") :
-        console.log("not enter")
+    return eventIsEnterKeypress(event) ? 
+      evaluateCommand(actionBar["actionString"]) :
+      null
+  }
+
+  function evaluateCommand(str) {
+    const commandDict = {
+      help : doHelp,
+      alert: doAlert,
+    }
+    const instruction = parseInstruction(str);
+    const lexedInstructionOrFalse = lexInstruction(instruction);
+    if (!lexedInstructionOrFalse) return;
+
+    const [command, arglist] = lexedInstructionOrFalse;
+    const fun = commandDict[command]
+
+    return fun !== undefined ? 
+      commandDict[command](arglist) :
+      console.log("invalid command")
+
+  }
+
+  function doAlert(args) {
+    const message = args.reduce((acc, x) =>  acc + " " + x, "")
+    alert(message)
+    return
+  }
+
+  function doHelp() {
+    doAlert(["this will be a help message"]);
   }
 
   return (
@@ -59,7 +86,7 @@ function TodoSearch(props) {
   const {Value, InputHandler, KeypressHandler} = props;
   return (
   <input 
-    value={Value.str} 
+    value={Value.actionString} 
     onChange={(e) => InputHandler(e)}
     onKeyPress={(e) => KeypressHandler(e)}
   />)
