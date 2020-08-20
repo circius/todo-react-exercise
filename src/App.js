@@ -143,7 +143,6 @@ function TodoApp(props) {
   }
 
   function statusFilterTodos(todoList) {
-    console.log(settings.showCompleted)
         return settings.showCompleted ? 
       todoList : 
       todoList.filter((x) => x.completed === false)
