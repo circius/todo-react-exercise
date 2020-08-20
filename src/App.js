@@ -150,6 +150,8 @@ function TodoSearch(props) {
   const {Value, InputHandler, KeypressHandler} = props;
   return (
   <input 
+    type="text"
+    className="form-control" 
     value={Value.actionString} 
     onChange={(e) => InputHandler(e)}
     onKeyPress={(e) => KeypressHandler(e)}
@@ -159,7 +161,8 @@ function TodoSearch(props) {
 function TodoList(props) {
   const { todos, StatusClickHandler } = props;
   return (
-    <ul>
+    <ul
+      className="list-group">
       {todos.map((todo) => (
         <TodoItem
           key={todo.id}
@@ -174,7 +177,8 @@ function TodoList(props) {
 function TodoItem(props) {
   const { details, StatusClickHandler } = props;
   return (
-    <li>
+    <li
+      className="list-group-item d-flex justify-content-between">
       {details.title}
       <TodoStatus details={details} OnClick={StatusClickHandler} />{" "}
     </li>
@@ -184,7 +188,10 @@ function TodoItem(props) {
 function TodoStatus(props) {
   const { details, OnClick } = props;
   return (
-    <button onClick={() => OnClick(details.id)}>
+    <button
+      type="button" 
+      className="btn btn-light"
+      onClick={() => OnClick(details.id)}>
       {details.completed ? "✔" : "✗"}
     </button>
   );
