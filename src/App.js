@@ -12,12 +12,20 @@ function App() {
 
 function TodoApp(props) {
   const [todoList, setTodoList] = useState([
-    { id: 1, title: "whatever I forgot yesterday", completed: false },
-    { id: 2, title: "whatever meant to do today", completed: false },
-    { id: 3, title: "the things I never thought I'd do", completed: false },
+    { id: 1, title: "whatever I forgot yesterday", completed: false, userId: 1 },
+    { id: 2, title: "whatever meant to do today", completed: false, userId: 1 },
+    { id: 3, title: "the things I never thought I'd do", completed: false, userId: 1 },
+    { id: 4, title: "my first thought on the matter", completed: false, userId: 2},
+    { id: 5, title: "not my finest work", completed: false, userId: 2}
   ]);
 
   const [actionBar, setActionBar] = useState({ actionString: ":" });
+
+  const [settings, setSettings] = useState({
+  filter: "(x) => true",
+  userId: 1,
+  showCompleted: true,
+})
 
   function handleStatusClick(id) {
     const todoListCopy = [...todoList];
@@ -44,9 +52,13 @@ function TodoApp(props) {
   }
 
   function evaluateCommand(str) {
+    
     const commandDict = {
       help : doHelp,
       alert: doAlert,
+      filter: doFilter,
+      setuser: doSetUser,
+      showcompleted: doShowCompleted,
     }
     const instruction = parseInstruction(str);
     const lexedInstructionOrFalse = lexInstruction(instruction);
@@ -61,14 +73,64 @@ function TodoApp(props) {
 
   }
 
-  function doAlert(args) {
-    const message = args.reduce((acc, x) =>  acc + " " + x, "")
-    alert(message)
-    return
+  function doShowCompleted(arglist) {
+    const [doOrDoNot, ...rest] = arglist
+    let settingsCopy = {...settings}
+    settingsCopy["showCompleted"] = doOrDoNot === "true"
+    return setSettings(settingsCopy)
   }
 
   function doHelp() {
     doAlert(["this will be a help message"]);
+  }
+
+  function doAlert(args) {
+    const message = args.reduce((acc, x) =>  acc + " " + x, "")
+    alert(message)
+  }
+
+  function doSetUser(arglist) {
+    const [userId, ...rest] = arglist
+    let settingsCopy = {...settings}
+    settingsCopy["userId"] = parseInt(userId)
+    return setSettings(settingsCopy)
+  }
+
+  function doFilter(arglist) {
+    const predicate = arglist.join(" ")
+    let settingsCopy = {...settings}
+    settingsCopy["filter"] = predicate
+    return setSettings(settingsCopy)
+  }
+
+  function arbitraryFilterTodos(todoList) {
+    const filterStringOrFunc = settings["filter"]
+    switch(typeof(filterStringOrFunc)){
+      case "string":
+        return todoList.filter(eval(filterStringOrFunc));
+      case "function":
+        return todoList.filter(filterStringOrFunc);
+      default:
+        console.log("blowout in the filter facade")
+        return
+    }
+  }
+
+  function userFilterTodos(todoList) {
+    return todoList.filter((x) => x.userId === settings.userId )
+  }
+
+  function statusFilterTodos(todoList) {
+    console.log(settings.showCompleted)
+        return settings.showCompleted ? 
+      todoList : 
+      todoList.filter((x) => x.completed === false)
+  }
+
+  function applyTodoFilters(todoList) {
+    return arbitraryFilterTodos(
+            statusFilterTodos(
+            userFilterTodos(todoList)))
   }
 
   return (
@@ -77,7 +139,9 @@ function TodoApp(props) {
         Value={actionBar} 
         InputHandler={handleActionUpdate} 
         KeypressHandler={handleActionKeypress}/>
-      <TodoList todos={todoList} StatusClickHandler={handleStatusClick} />
+      <TodoList 
+        todos={applyTodoFilters(todoList)} 
+        StatusClickHandler={handleStatusClick} />
     </div>
   );
 }
