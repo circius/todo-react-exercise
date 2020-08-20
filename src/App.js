@@ -52,6 +52,10 @@ function TodoApp(props) {
   }
 
   function evaluateCommand(str) {
+    function cleanUpDecorator(func){
+      setActionBar({ actionString : ":" })
+      return func
+    }
     
     const commandDict = {
       help : doHelp,
@@ -59,6 +63,7 @@ function TodoApp(props) {
       filter: doFilter,
       setuser: doSetUser,
       showcompleted: doShowCompleted,
+      add: doAdd,
     }
     const instruction = parseInstruction(str);
     const lexedInstructionOrFalse = lexInstruction(instruction);
@@ -68,9 +73,26 @@ function TodoApp(props) {
     const fun = commandDict[command]
 
     return fun !== undefined ? 
-      commandDict[command](arglist) :
+      cleanUpDecorator(commandDict[command](arglist)) :
       console.log("invalid command")
+  }
 
+  function doAdd(arglist) {
+    //TODO upgrade todoDSL so it can handle quoted strings!
+    const newContent = arglist.join(" ")
+
+    // WARNING/TODO dangerous assumption: we assume that we can never
+    // delete todos. This is functionality that should be governed
+    // by a database, but in the meantime...
+    const nextId = todoList.length + 1
+
+    const newTodo = {
+      id: nextId, title: newContent, completed: false, userId: settings.userId
+    }
+
+    let todoListCopy = todoList.slice()
+    todoListCopy.push(newTodo)
+    return setTodoList(todoListCopy)
   }
 
   function doShowCompleted(arglist) {
@@ -149,7 +171,7 @@ function TodoApp(props) {
 function TodoSearch(props) {
   const {Value, InputHandler, KeypressHandler} = props;
   return (
-  <input 
+  <input
     type="text"
     className="form-control" 
     value={Value.actionString} 
