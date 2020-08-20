@@ -51,11 +51,13 @@ function TodoList(props) {
 }
 
 function TodoItem(props) {
-  const {details, StatusClickHandler} = props;
+  const { details, StatusClickHandler } = props;
   return (
-    <li Key={details.id}> {details.title} 
-    <TodoStatus details = {details} OnClick={StatusClickHandler}/> </li>
-  )
+    <li>
+      {details.title}
+      <TodoStatus details={details} OnClick={StatusClickHandler} />{" "}
+    </li>
+  );
 }
 
 function TodoStatus(props) {
