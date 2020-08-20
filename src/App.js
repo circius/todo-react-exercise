@@ -1,26 +1,70 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <TodoApp />
     </div>
   );
+}
+
+function TodoApp(props) {
+  const [todoList, setTodoList] = useState([
+    {id: 1, title:"whatever I forgot yesterday", completed:false},
+    {id: 2, title:"whatever meant to do today", completed: false},
+    {id: 3, title:"the things I never thought I'd do", completed: false}
+  ])
+
+  function handleStatusClick(id) {
+    const todoListCopy = [...todoList];
+    const targetItemIdx = todoListCopy.findIndex((x) => x.id === id);
+    let targetItemCopy = { ... todoListCopy[targetItemIdx]}
+    targetItemCopy.completed = !targetItemCopy.completed;
+    todoListCopy[targetItemIdx] = targetItemCopy;
+    return setTodoList(todoListCopy);
+
+  }
+  return (
+    <div>
+    <TodoSearch />
+    <TodoList todos={todoList} StatusClickHandler={handleStatusClick}/>
+    </div>
+  )
+}
+
+function TodoSearch(props) {
+  return (
+    <input />
+  )
+}
+
+function TodoList(props) {
+  const {todos, StatusClickHandler} = props;
+  return (
+    <ul>
+    {
+      todos.map((todo) => <TodoItem details={todo} StatusClickHandler={StatusClickHandler}/>)
+    }
+    </ul>
+  )
+}
+
+function TodoItem(props) {
+  const {details, StatusClickHandler} = props;
+  return (
+    <li Key={details.id}> {details.title} 
+    <TodoStatus details = {details} OnClick={StatusClickHandler}/> </li>
+  )
+}
+
+function TodoStatus(props) {
+  const {details, OnClick} = props;
+  return (
+  <button onClick={() => OnClick(details.id)}>
+    {details.completed ? "✔" : "✗"}
+  </button>
+    )
 }
 
 export default App;
