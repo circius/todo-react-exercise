@@ -1,12 +1,12 @@
 import * as DSL from './todoDSL';
 
-describe("todoDSL parser tests", () => {
+describe("todoDSL tokenizer tests", () => {
 
-    test('parsing an empty string results in an empty list', () => {
-        expect(DSL.parseInstruction("")).toStrictEqual([]);
+    test('tokenizes an empty string results in an empty list', () => {
+        expect(DSL.tokenizeInstruction("")).toStrictEqual([]);
     })
 
-    it('can parse all kinds of weird input', () => {
+    it('can tokenize all kinds of weird input', () => {
         const valid1 = "anything at all";
         const valid2 = "even symbols like !£$%^&*()";
         const valid3 = `even
@@ -14,29 +14,29 @@ strings            scattered
         on 
             multiple    disordered                 ->
     lines`
-        expect(DSL.parseInstruction(valid1)).toStrictEqual(
+        expect(DSL.tokenizeInstruction(valid1)).toStrictEqual(
             ["anything", "at", "all"])
-        expect(DSL.parseInstruction(valid2)).toStrictEqual(
+        expect(DSL.tokenizeInstruction(valid2)).toStrictEqual(
             ["even", "symbols", "like", "!£$%^&*()"])
-        expect(DSL.parseInstruction(valid3)).toStrictEqual(
+        expect(DSL.tokenizeInstruction(valid3)).toStrictEqual(
             ["even", "strings", "scattered", "on", "multiple", "disordered", "->", "lines"])
 })})
 
-describe("todoDSL lexer tests", () => {
+describe("todoDSL parser tests", () => {
 
-    test("lexing an empty list produces false", () => {
-        expect(DSL.lexInstruction([])).toStrictEqual(false)
+    test("parsing an empty list produces false", () => {
+        expect(DSL.parseInstruction([])).toStrictEqual(false)
     })
 
-    test("lexing a syntactically invalid instruction produces false", () => {
-        expect(DSL.lexInstruction(["no", "command"])).toStrictEqual(false)
-        expect(DSL.lexInstruction(
+    test("parsing a syntactically invalid instruction produces false", () => {
+        expect(DSL.parseInstruction(["no", "command"])).toStrictEqual(false)
+        expect(DSL.parseInstruction(
             ["the", ":command", "is","in", "the", "wrong", "place"])).toStrictEqual(false)
     })
 
-    it("can lex syntactically correct instructions", () => {
-        expect(DSL.lexInstruction([":help"])).toStrictEqual(["help", []])
-        // expect(DSL.lexInstruction(
+    it("can parse syntactically correct instructions", () => {
+        expect(DSL.parseInstruction([":help"])).toStrictEqual(["help", []])
+        // expect(DSL.parseInstruction(
         //     [":do something somewhere"])).toStrictEqual(
         //         ["do", ["something", "somewhere"]]
         //     ) //this actually works but the test fails for some reason.
