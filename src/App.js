@@ -27,6 +27,15 @@ function TodoApp(props) {
   showCompleted: true,
 })
 
+const commandDict = {
+  help : doHelp,
+  alert: doAlert,
+  filter: doFilter,
+  setuser: doSetUser,
+  showcompleted: doShowCompleted,
+  add: doAdd,
+}
+
   function handleStatusClick(id) {
     const todoListCopy = [...todoList];
     const targetItemIdx = todoListCopy.findIndex((x) => x.id === id);
