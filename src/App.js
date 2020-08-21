@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { lexInstruction, parseInstruction } from "./todoDSL"
+import { parseInstruction, tokenizeInstruction } from "./todoDSL"
 import "./App.css";
 
 function App() {
@@ -57,16 +57,8 @@ function TodoApp(props) {
       return func
     }
     
-    const commandDict = {
-      help : doHelp,
-      alert: doAlert,
-      filter: doFilter,
-      setuser: doSetUser,
-      showcompleted: doShowCompleted,
-      add: doAdd,
-    }
-    const instruction = parseInstruction(str);
-    const lexedInstructionOrFalse = lexInstruction(instruction);
+    const instruction = tokenizeInstruction(str);
+    const lexedInstructionOrFalse = parseInstruction(instruction);
     if (!lexedInstructionOrFalse) return;
 
     const [command, arglist] = lexedInstructionOrFalse;
