@@ -57,7 +57,19 @@ strings            scattered
         "\"double quotes\"",
         ","
       ])
-  });
+  })
+  it("can handle multiple quoted strings in a single line", () => {
+    const str = "there \"should be\" five tokens \"in this line\""
+    const tokens = DSL.tokenizeInstruction(str)
+    expect(tokens.length).toStrictEqual(5)
+    expect(tokens).toStrictEqual([
+      "there",
+      "\"should be\"",
+      "five",
+      "tokens",
+      "\"in this line\""
+    ])
+  })
 });
 
 describe("todoDSL parser tests", () => {
