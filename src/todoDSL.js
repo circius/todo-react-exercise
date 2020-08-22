@@ -24,19 +24,34 @@ function parseInstruction(l) {
 
   const [command, ...arglist] = l;
 
-  return validSyntaxP(command) ? [command.substring(1), arglist] : false;
+  const arglistProper = arglist.map(stripQuotingArtefacts)
+
+  return validSyntaxP(command) ? [command.substring(1), arglistProper] : false;
+}
+
+/**
+ * consumes a string which may or may not be double-quoted. if it is,
+ * produces the same string without the doubel quotes. if it's not, 
+ * produces the unchanged string.
+ *
+ * @param {string} str
+ * @return {string} 
+ */
+function stripQuotingArtefacts(str) {
+  return str.slice(0,1) === "\"" ?  /"(.+)"/.exec(str)[1] : str 
 }
 
 /**
  * @description
- * Consumes a string representing a todoDSL expr and tokenizes it
- * according to the pattern [ token ] [ whitespace ] [ token ].
+ * Consumes a string representing a todoDSL expr and tokenizes it,
+ * getting double-quote- and whitespace-delimited parts, in that order.
  *
  * @param {String} s
- * @return {Array>String>}
+ * @return {Array<String>}
  */
 function tokenizeInstruction(s) {
-  return s === "" ? [] : s.split(/\s+/);
+  const tokens = s.match(/"(.+)"|[\S]+/g)
+  return tokens !== null ? tokens : []
 }
 
-export { parseInstruction, tokenizeInstruction };
+export { parseInstruction, tokenizeInstruction, stripQuotingArtefacts };
