@@ -12,19 +12,19 @@
  * @return {(Array[ String, Array<String>  ])|Boolean} 
  */
 function parseInstruction(l) {
-  function validSyntaxP(command){
+  function validSyntaxP(command) {
     return command[0] === ":";
   }
 
-  function atLeastOneElementP(l){
-    return l.length > 0
+  function atLeastOneElementP(l) {
+    return l.length > 0;
   }
-  
-  if  (!atLeastOneElementP(l)) return false;
 
-  const [command, ...arglist] = l
+  if (!atLeastOneElementP(l)) return false;
 
-  return validSyntaxP(command) ? [command.substring(1), arglist] : false
+  const [command, ...arglist] = l;
+
+  return validSyntaxP(command) ? [command.substring(1), arglist] : false;
 }
 
 /**
@@ -33,10 +33,10 @@ function parseInstruction(l) {
  * according to the pattern [ token ] [ whitespace ] [ token ].
  *
  * @param {String} s
- * @return {Array>String>} 
+ * @return {Array>String>}
  */
 function tokenizeInstruction(s) {
-  return s === "" ? [] : s.split(/\s+/)
+  return s === "" ? [] : s.split(/\s+/);
 }
 
-export { parseInstruction, tokenizeInstruction }
+export { parseInstruction, tokenizeInstruction };
