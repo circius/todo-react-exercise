@@ -2,10 +2,10 @@
  * parseInstruction
  * @description
  * consumes a list of tokens and parses them according to the 
- * following insanely simple grammar:
+ * following insanely simple (still simplified) grammar:
  * [ expr ] ::= [ command  ] [ arg ] 
  * [ command  ] ::=  :[a-zA-Z_] 
- * [ arg ] ::=  [^"]* 
+ * [ arg ] ::=  ["][ ^" ]+["]  
 
  * Note that proper validation of output is TODO.
  * @param {Array} l
