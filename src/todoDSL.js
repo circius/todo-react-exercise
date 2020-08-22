@@ -50,7 +50,7 @@ function stripQuotingArtefacts(str) {
  * @return {Array<String>}
  */
 function tokenizeInstruction(s) {
-  const tokens = s.match(/"(.+)"|[\S]+/g)
+  const tokens = s.match(/"([^"]+)"|[\S]+/g)
   return tokens !== null ? tokens : []
 }
 
