@@ -24,7 +24,7 @@ function TodoApp(props) {
   const [settings, setSettings] = useState({
     filter: "(x) => true",
     userId: 1,
-    showCompleted: true,
+    showPredicate: (x) => !x.completed,
   });
 
   const [helpFacet, setHelpFacet] = useState("");
@@ -56,9 +56,9 @@ function TodoApp(props) {
       fun: doSetUser,
       usage: ":setuser < int > ",
     },
-    showcompleted: {
-      fun: doShowCompleted,
-      usage: ":showcompleted < boolean >",
+    show: {
+      fun: doShow,
+      usage: ":show < completed | todo | all >",
     },
     add: {
       fun: doAdd,
@@ -190,20 +190,27 @@ function TodoApp(props) {
     return true;
   }
 
-  /** doShowCompleted
-   * todoDSL command. consumes an array of strings and produces a copy
-   * of the Settings state object in which `showCompleted` is set to the
-   * boolean value represented by arglist[0]. As a side-effect, updates
+  /** doShow
+   * todoDSL command. consumes an array of strings `arglist` and produces a copy
+   * of the Settings state object in which `showFilter` is set to a predicate
+   * corresponding semantically to arglist[0]. As a side-effect, updates
    * Settings with the new object.
    *
    * @param {Array<string>} arglist
    * @modifies{settings}
    * @return {Object}
    */
-  function doShowCompleted(arglist) {
-    const [doOrDoNot, ...rest] = arglist;
+  function doShow(arglist) {
+    const predDict = {
+      all : (x) => true,
+      completed: (x) => x.completed,
+      todo: (x) => !x.completed
+      }
+    const predicate = predDict[arglist]
+    if (predicate === undefined) return false
+
     let settingsCopy = { ...settings };
-    settingsCopy["showCompleted"] = doOrDoNot === "true";
+    settingsCopy["showPredicate"] = predicate;
     setSettings(settingsCopy);
     return settingsCopy;
   }
