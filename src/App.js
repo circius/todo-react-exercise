@@ -19,7 +19,7 @@ function TodoApp(props) {
     { id: 5, title: "not my finest work", completed: false, userId: 2}
   ]);
 
-  const [actionBar, setActionBar] = useState({ actionString: ":" });
+  const [actionBar, setActionBar] = useState({ actionString: ":help" });
 
   const [settings, setSettings] = useState({
   filter: "(x) => true",
@@ -27,14 +27,28 @@ function TodoApp(props) {
   showCompleted: true,
 })
 
-const commandDict = {
-  help : doHelp,
-  alert: doAlert,
-  filter: doFilter,
-  setuser: doSetUser,
-  showcompleted: doShowCompleted,
-  add: doAdd,
-}
+  const [helpFacet, setHelpFacet] = useState("")
+
+  const commandDict = {
+    help : {
+      fun: doHelp, 
+      usage: ":help < list-commands | <cmd> | hide >"},
+    alert: {
+      fun: doAlert, 
+      usage: ":alert < [^\"]* >"},
+    filter: {
+      fun: doFilter, 
+      usage: ":filter < lambda(x) -> boolean >"},
+    setuser: {
+      fun: doSetUser, 
+      usage: ":setuser < int > "},
+    showcompleted: {
+      fun: doShowCompleted, 
+      usage: ":showcompleted < boolean >"},
+    add: {
+      fun: doAdd,
+      usage: ":add < [^\"]+ >"},
+  }
 
   function handleStatusClick(id) {
     const todoListCopy = [...todoList];
@@ -65,16 +79,26 @@ const commandDict = {
       setActionBar({ actionString : ":" })
       return func
     }
-    
+
+    function validCommandP(str) {
+      return Object.keys(commandDict).includes(str)
+    }
+
     const instruction = tokenizeInstruction(str);
     const lexedInstructionOrFalse = parseInstruction(instruction);
     if (!lexedInstructionOrFalse) return;
 
     const [command, arglist] = lexedInstructionOrFalse;
-    const fun = commandDict[command]
+    if (!validCommandP(command)) return;
+
+    const fun = commandDict[command]["fun"]
+
+    const funWithCleanup = cleanUpDecorator(fun)
+
+    if (command !== "help") setHelpFacet("")
 
     return fun !== undefined ? 
-      cleanUpDecorator(commandDict[command](arglist)) :
+      funWithCleanup(arglist) :
       console.log("invalid command")
   }
 
@@ -103,8 +127,11 @@ const commandDict = {
     return setSettings(settingsCopy)
   }
 
-  function doHelp() {
-    doAlert(["this will be a help message"]);
+  function doHelp(arglist) {
+    setHelpFacet("help")
+    return arglist.length === 0 ?
+      setHelpFacet('help') :
+      setHelpFacet(arglist[0])
   }
 
   function doAlert(args) {
@@ -161,6 +188,10 @@ const commandDict = {
         Value={actionBar} 
         InputHandler={handleActionUpdate} 
         KeypressHandler={handleActionKeypress}/>
+      <Help
+        Facet={helpFacet}
+        CommandDict={commandDict}
+      />
       <TodoList 
         todos={applyTodoFilters(todoList)} 
         StatusClickHandler={handleStatusClick} />
@@ -168,7 +199,58 @@ const commandDict = {
   );
 }
 
-function TodoSearch(props) {
+function Help(props) {
+  const {Facet, CommandDict} = props
+  const commands = Object.keys(CommandDict)
+
+  function getHelp(Facet, CommandDict) {
+   if (commands.includes(Facet)) {
+      return CommandDict[Facet]["usage"]
+    } else if (Facet === "list-commands") {
+      return getCommandList(CommandDict)
+    } else {
+      return undefined;
+    }
+  }
+
+  function getCommandList(CommandDict) {
+    return Object.keys(CommandDict).
+    sort((a, b) => a[0] < b[0] ? -1 : 1).
+    map((key) => CommandDict[key]["usage"])
+  }
+
+  const help = getHelp(Facet, CommandDict)
+
+  switch (typeof(help)) {
+    case "string":
+      return <HelpString Content={help}/>
+    case "object":
+      return <HelpList ContentList={help} />
+    default:
+      return null
+  }
+}
+
+function HelpString(props) {
+  const {Content, Key} = props
+  return (
+    <li className="alert alert-info list-group-item" key={Key}>
+    {Content}
+    </li>
+  )
+}
+
+function HelpList(props) {
+  const {ContentList} = props
+  return (
+    <ul className="list-group">
+      {ContentList.map(
+        (Content, idx) => <HelpString Key={idx} Content={Content}/>)}
+    </ul>
+  )
+}
+
+export function TodoSearch(props) {
   const {Value, InputHandler, KeypressHandler} = props;
   return (
   <input
@@ -180,7 +262,7 @@ function TodoSearch(props) {
   />)
 }
 
-function TodoList(props) {
+export function TodoList(props) {
   const { todos, StatusClickHandler } = props;
   return (
     <ul
@@ -196,7 +278,7 @@ function TodoList(props) {
   );
 }
 
-function TodoItem(props) {
+export function TodoItem(props) {
   const { details, StatusClickHandler } = props;
   return (
     <li
@@ -207,7 +289,7 @@ function TodoItem(props) {
   );
 }
 
-function TodoStatus(props) {
+export function TodoStatus(props) {
   const { details, OnClick } = props;
   return (
     <button
