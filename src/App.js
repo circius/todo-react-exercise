@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { parseInstruction, tokenizeInstruction } from "./todoDSL";
 import "./App.css";
 
@@ -17,28 +17,7 @@ function App() {
  * @return {Symbol(react.element)}
  */
 function TodoApp(props) {
-  const [todoList, setTodoList] = useState([
-    {
-      id: 1,
-      title: "whatever I forgot yesterday",
-      completed: false,
-      userId: 1,
-    },
-    { id: 2, title: "whatever meant to do today", completed: false, userId: 1 },
-    {
-      id: 3,
-      title: "the things I never thought I'd do",
-      completed: false,
-      userId: 1,
-    },
-    {
-      id: 4,
-      title: "my first thought on the matter",
-      completed: false,
-      userId: 2,
-    },
-    { id: 5, title: "not my finest work", completed: false, userId: 2 },
-  ]);
+  const [todoList, setTodoList] = useState([]);
 
   const [actionBar, setActionBar] = useState({ actionString: ":help" });
 
@@ -49,6 +28,15 @@ function TodoApp(props) {
   });
 
   const [helpFacet, setHelpFacet] = useState("");
+
+  useEffect(() => {
+    const fun = () => {
+        fetch("https://jsonplaceholder.typicode.com/todos").then(
+          (res) => res.json()).then(
+            (res) => setTodoList(res)).catch(
+              (error) => console.log(error))};
+    fun();
+  }, []);
 
   // note that every command should return 'true' if it succeeds, 'false' otherwise.
   const commandDict = {
