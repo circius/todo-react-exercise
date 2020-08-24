@@ -23,7 +23,7 @@ export function TodoApp(props) {
   const [helpFacet, setHelpFacet] = useState("");
 
   useEffect(() => {
-    const fun = () => {
+    const fun = ()help => {
       fetch("https://jsonplaceholder.typicode.com/todos").then(
         (res) => res.json()).then(
           (res) => setTodoList(res)).catch(
@@ -32,33 +32,7 @@ export function TodoApp(props) {
     fun();
   }, []);
 
-  // note that every command should return 'true' if it succeeds, 'false' otherwise.
-  const commandDict = {
-    help: {
-      fun: doHelp,
-      usage: ":help < list-commands | <cmd> | hide >",
-    },
-    alert: {
-      fun: doAlert,
-      usage: ':alert < [^"]* >',
-    },
-    filter: {
-      fun: doFilter,
-      usage: ":filter < lambda(x) -> boolean >",
-    },
-    setuser: {
-      fun: doSetUser,
-      usage: ":setuser < int > ",
-    },
-    show: {
-      fun: doShow,
-      usage: ":show < completed | todo | all >",
-    },
-    add: {
-      fun: doAdd,
-      usage: ':add < [^"]+ >',
-    },
-  };
+  /** Event Handlers */
 
   /**
    * Consumes the id of a todo in my state variable todoList and
@@ -116,6 +90,39 @@ export function TodoApp(props) {
       ? evaluateCommand(actionBar["actionString"])
       : false;
   }
+
+  /** SUPPLEMENTARY CODE FOR todoDSL. 
+   * TODO: how can I refactor this out of TodoApp? I want it in todoDSL, but it has
+   * these calls to the various state Hooks...
+   */
+
+  // note that every command should return 'true' if it succeeds, 'false' otherwise.
+  const commandDict = {
+    help: {
+      fun: doHelp,
+      usage: ":help < list-commands | <cmd> | hide >",
+    },
+    alert: {
+      fun: doAlert,
+      usage: ':alert < [^"]* >',
+    },
+    filter: {
+      fun: doFilter,
+      usage: ":filter < lambda(x) -> boolean >",
+    },
+    setuser: {
+      fun: doSetUser,
+      usage: ":setuser < int > ",
+    },
+    show: {
+      fun: doShow,
+      usage: ":show < completed | todo | all >",
+    },
+    add: {
+      fun: doAdd,
+      usage: ':add < [^"]+ >',
+    },
+  };
 
   /**
    * consumes a strings which may or may not be a valid todoDSL expression.
