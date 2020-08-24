@@ -5,8 +5,10 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <TodoApp />
+    <div className="d-flex justify-content-center mt-3">
+      <div className="App">
+        <TodoApp />
+      </div>
     </div>
   );
 }
