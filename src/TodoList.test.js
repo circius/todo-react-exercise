@@ -2,7 +2,7 @@ import React from "react";
 import { unmountComponentAtNode, render } from "react-dom";
 import { act } from "react-dom/test-utils";
 
-import { TodoStatus, TodoItem, TodoList } from "./App";
+import { TodoStatus, TodoItem, TodoList } from "./TodoList";
 
 let container = null;
 
