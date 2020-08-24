@@ -181,10 +181,7 @@ function doShow(arglist, gettersAndSetters) {
   const predicate = predDict[arglist];
   if (predicate === undefined) return false;
 
-  let settingsCopy = { ...gettersAndSetters.settings.getter };
-  settingsCopy["showPredicate"] = predicate;
-  gettersAndSetters.settings.setter(settingsCopy);
-  return settingsCopy;
+  return setSettings("showPredicate", predicate, gettersAndSetters)
 }
 
 /** doHelp
@@ -233,11 +230,8 @@ function doAlert(arglist) {
  * @return {Object}
  */
 function doSetUser(arglist, gettersAndSetters) {
-  const [userId, ...rest] = arglist;
-  let settingsCopy = { ...gettersAndSetters.settings.getter };
-  settingsCopy["userId"] = parseInt(userId);
-  gettersAndSetters.settings(settingsCopy);
-  return settingsCopy;
+  const userId = parseInt(arglist[0]); // discard the rest of the arglist
+  return isNaN(userId) ? false : setSettings('userId', parseInt(userId), gettersAndSetters)
 }
 
 /**
@@ -255,10 +249,25 @@ function doSetUser(arglist, gettersAndSetters) {
  */
 function doFilter(arglist, gettersAndSetters) {
   const predicate = arglist.join(" ");
+  return setSettings("filter", predicate, gettersAndSetters)
+}
+
+/**
+ * Consumes a key, a value, and a TodoApp's getters and setters, and produces a 
+ * copy of a TodoApp's `settings` state variable in which that key has its 
+ * value set to that value. As a side-effect, sets the TodoApp's `settings` to 
+ * the value of the copy.
+ *
+ * @param {string} key
+ * @param {any} value
+ * @param {Object} gettersAndSetters
+ * @return {Object} 
+ */
+function setSettings(key, value, gettersAndSetters) {
   let settingsCopy = { ...gettersAndSetters.settings.getter };
-  settingsCopy["filter"] = predicate;
-  gettersAndSetters.settings.setter(settingsCopy);
-  return settingsCopy;
+  settingsCopy[key] = value;
+  gettersAndSetters.settings.setter(settingsCopy)
+  return settingsCopy
 }
 
 export {
