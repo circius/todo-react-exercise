@@ -37,39 +37,37 @@ strings            scattered
   });
   it("does not recognize single-quoted strings as single tokens", () => {
     const stringWithQuotes1 = "this one uses 'single quotes', and";
-    expect(
-      DSL.tokenizeInstruction(stringWithQuotes1)).toStrictEqual([
-        "this",
-        "one",
-        "uses",
-        "'single",
-        "quotes',",
-        "and",
-      ])
+    expect(DSL.tokenizeInstruction(stringWithQuotes1)).toStrictEqual([
+      "this",
+      "one",
+      "uses",
+      "'single",
+      "quotes',",
+      "and",
+    ]);
   });
   it("can recognize double-quoted strings as single tokens", () => {
     const stringWithQuotes2 = 'this one uses "double quotes",';
-    expect(
-      DSL.tokenizeInstruction(stringWithQuotes2)).toStrictEqual([
-        "this",
-        "one",
-        "uses",
-        "\"double quotes\"",
-        ","
-      ])
-  })
+    expect(DSL.tokenizeInstruction(stringWithQuotes2)).toStrictEqual([
+      "this",
+      "one",
+      "uses",
+      '"double quotes"',
+      ",",
+    ]);
+  });
   it("can handle multiple quoted strings in a single line", () => {
-    const str = "there \"should be\" five tokens \"in this line\""
-    const tokens = DSL.tokenizeInstruction(str)
-    expect(tokens.length).toStrictEqual(5)
+    const str = 'there "should be" five tokens "in this line"';
+    const tokens = DSL.tokenizeInstruction(str);
+    expect(tokens.length).toStrictEqual(5);
     expect(tokens).toStrictEqual([
       "there",
-      "\"should be\"",
+      '"should be"',
       "five",
       "tokens",
-      "\"in this line\""
-    ])
-  })
+      '"in this line"',
+    ]);
+  });
 });
 
 describe("todoDSL parser tests", () => {
@@ -92,10 +90,10 @@ describe("todoDSL parser tests", () => {
     ).toStrictEqual(false);
   });
   it("strips literal quotes from tokens representing quoted strings", () => {
-    expect(DSL.parseInstruction([":add", "\"no man is\"", "\"an island\""])).toStrictEqual(
-      ["add", ["no man is", "an island"]]
-    )
-  })
+    expect(
+      DSL.parseInstruction([":add", '"no man is"', '"an island"'])
+    ).toStrictEqual(["add", ["no man is", "an island"]]);
+  });
 
   it("can parse syntactically correct instructions", () => {
     expect(DSL.parseInstruction([":help"])).toStrictEqual(["help", []]);
@@ -108,13 +106,13 @@ describe("todoDSL parser tests", () => {
 
 describe("stripQuotingArtefacts tests", () => {
   test("can strip double quotes from double-quoted string", () => {
-    expect(DSL.stripQuotingArtefacts("\"test that this works\"")).toStrictEqual(
+    expect(DSL.stripQuotingArtefacts('"test that this works"')).toStrictEqual(
       "test that this works"
-    )
-  })
+    );
+  });
   test("just produces its argument if the latter's not double-quoted", () => {
-    expect(DSL.stripQuotingArtefacts("nothing will happen to me")).toStrictEqual(
-      "nothing will happen to me"
-    )
-  })
-})
+    expect(
+      DSL.stripQuotingArtefacts("nothing will happen to me")
+    ).toStrictEqual("nothing will happen to me");
+  });
+});

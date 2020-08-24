@@ -22,18 +22,18 @@ export function TodoApp(props) {
   const [helpFacet, setHelpFacet] = useState("");
 
   const gettersAndSetters = {
-    todoList: {getter: todoList, setter: setTodoList},
-    actionBar: {getter: actionBar, setter: setActionBar},
-    settings: {getter: settings, setter: setSettings},
-    helpFacet: {getter: helpFacet, setter: setHelpFacet}
-  }
+    todoList: { getter: todoList, setter: setTodoList },
+    actionBar: { getter: actionBar, setter: setActionBar },
+    settings: { getter: settings, setter: setSettings },
+    helpFacet: { getter: helpFacet, setter: setHelpFacet },
+  };
 
   useEffect(() => {
     const fun = () => {
-      fetch("https://jsonplaceholder.typicode.com/todos").then(
-        (res) => res.json()).then(
-          (res) => setTodoList(res)).catch(
-            (error) => console.log(error));
+      fetch("https://jsonplaceholder.typicode.com/todos")
+        .then((res) => res.json())
+        .then((res) => setTodoList(res))
+        .catch((error) => console.log(error));
     };
     fun();
   }, []);
@@ -96,7 +96,7 @@ export function TodoApp(props) {
       ? evaluateCommand(actionBar["actionString"], gettersAndSetters)
       : false;
   }
-    /**
+  /**
    * consumes a todoList and a function, OR a string representing
    * a function, and applies the function to the todolist as a filter,
    * returning the resulting subset.
@@ -155,11 +155,13 @@ export function TodoApp(props) {
       <TodoSearch
         Value={actionBar}
         InputHandler={handleActionUpdate}
-        KeypressHandler={handleActionKeypress} />
+        KeypressHandler={handleActionKeypress}
+      />
       <Help Facet={helpFacet} CommandDict={commandDict} />
       <TodoList
         todos={applyTodoFilters(todoList)}
-        StatusClickHandler={handleStatusClick} />
+        StatusClickHandler={handleStatusClick}
+      />
     </div>
   );
 }
@@ -179,7 +181,7 @@ export function TodoSearch(props) {
       className="form-control"
       value={Value.actionString}
       onChange={(e) => InputHandler(e)}
-      onKeyPress={(e) => KeypressHandler(e)} />
+      onKeyPress={(e) => KeypressHandler(e)}
+    />
   );
 }
-
