@@ -96,6 +96,9 @@ export function TodoApp(props) {
       ? evaluateCommand(actionBar["actionString"], gettersAndSetters)
       : false;
   }
+
+  // methods related to filtering
+
   /**
    * consumes a todoList and a function, OR a string representing
    * a function, and applies the function to the todolist as a filter,
