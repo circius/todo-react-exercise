@@ -100,6 +100,49 @@ export function TodoApp(props) {
   // methods related to filtering
 
   /**
+   * Consumes a list of todos and a list of strings, 
+   * and returns the subset of those todos whose "title" attribute 
+   * contains the strings. Each string is matched independently. 
+   * Case-insensitive.
+   * 
+   * @param {Array<Todo>} todoList
+   * @param {Array<string>} loq
+   * @return {Array<Todo>} 
+   */
+  function todoListFilterByTitleQueries(todoList, loq) {
+    function todoListFilterByTitleQuery(todoList, query) {
+      const re = new RegExp("[^.+]" + query)
+      return todoList.filter((todo) => re.test(todo.title))
+    }
+
+    if (todoList.length === 0) {
+      return []
+    } else if (loq.length === 0) {
+      return todoList
+    } else {
+      const query = loq[0]
+      const next = todoListFilterByTitleQuery(todoList, query)
+      return todoListFilterByTitleQueries(next, loq.slice(1))
+    }
+  }
+
+  function todoListFilterByActionbar(todoList) {
+    function getQueries(s) {
+      const queries  = s.split(/\s+/ig)
+      console.log("queries from getQueries from str: " + s)
+      console.log(queries)
+      return queries
+    }
+    function shouldFilterP(str) {
+      return (actionBarString[0] !== ":" && actionBarString.length > 2)
+    }
+    const actionBarString = actionBar.actionString
+    return shouldFilterP(actionBarString) ?
+      todoListFilterByTitleQueries(todoList, getQueries(actionBarString)) :
+      todoList
+  }
+
+  /**
    * consumes a todoList and a function, OR a string representing
    * a function, and applies the function to the todolist as a filter,
    * returning the resulting subset.
@@ -150,7 +193,7 @@ export function TodoApp(props) {
    * @return {Array<todo>}
    */
   function applyTodoFilters(todoList) {
-    return arbitraryFilterTodos(statusFilterTodos(userFilterTodos(todoList)));
+    return todoListFilterByActionbar(arbitraryFilterTodos(statusFilterTodos(userFilterTodos(todoList))));
   }
 
   return (
