@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { commandDict, evaluateCommand } from "./todoDSL";
 import { Help } from "./Help";
 import { TodoList } from "./TodoList";
+import { todoListFilterByTitleQueries } from "./todoListUtilityFunctions"
 /**
  * Consumes props and produces a React element representing a Todo app.
  *
@@ -99,33 +100,6 @@ export function TodoApp(props) {
 
   // methods related to filtering
 
-  /**
-   * Consumes a list of todos and a list of strings, 
-   * and returns the subset of those todos whose "title" attribute 
-   * contains the strings. Each string is matched independently. 
-   * Case-insensitive.
-   * 
-   * @param {Array<Todo>} todoList
-   * @param {Array<string>} loq
-   * @return {Array<Todo>} 
-   */
-  function todoListFilterByTitleQueries(todoList, loq) {
-    function todoListFilterByTitleQuery(todoList, query) {
-      const re = new RegExp("[^.+]" + query)
-      return todoList.filter((todo) => re.test(todo.title))
-    }
-
-    if (todoList.length === 0) {
-      return []
-    } else if (loq.length === 0) {
-      return todoList
-    } else {
-      const query = loq[0]
-      const next = todoListFilterByTitleQuery(todoList, query)
-      return todoListFilterByTitleQueries(next, loq.slice(1))
-    }
-  }
-
   function todoListFilterByActionbar(todoList) {
     function getQueries(s) {
       const queries  = s.split(/\s+/ig)
@@ -137,6 +111,8 @@ export function TodoApp(props) {
       return (actionBarString[0] !== ":" && actionBarString.length > 2)
     }
     const actionBarString = actionBar.actionString
+    console.log("is my filter available? it should be the next guy")
+    console.log(todoListFilterByTitleQueries)
     return shouldFilterP(actionBarString) ?
       todoListFilterByTitleQueries(todoList, getQueries(actionBarString)) :
       todoList
