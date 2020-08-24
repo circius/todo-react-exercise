@@ -173,7 +173,7 @@ export function TodoApp(props) {
   }
 
   return (
-    <div>
+    <div className="TodoApp">
       <TodoSearch
         Value={actionBar}
         InputHandler={handleActionUpdate}
