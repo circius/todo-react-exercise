@@ -30,7 +30,7 @@
    * @return {Array<Todo>} 
    */
   function todoListFilterByTitleQuery(todoList, query) {
-    const re = new RegExp("^.*"+query) //+ query)
+    const re = new RegExp("^.*"+query, 'i') //+ query)
     return todoList.filter((todo) => re.test(todo.title))
   }
 

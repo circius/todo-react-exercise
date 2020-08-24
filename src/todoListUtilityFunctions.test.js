@@ -25,6 +25,11 @@ describe("tests/spec for fuzzy-ish matching from action bar", () => {
       const filteredTestData = M.todoListFilterByTitleQueries(todoList, ["quia", "adipis"])
       expect(filteredTestData.length).toStrictEqual(1)
     })
+    it("is case-insensitive", () => {
+      const filteredTestData = M.todoListFilterByTitleQueries(todoList, ["del"])
+      const filteredTestData2 = M.todoListFilterByTitleQueries(todoList, ["DEL"])
+      expect(filteredTestData).toStrictEqual(filteredTestData2)
+    })
 })
 
 const todoList = [
